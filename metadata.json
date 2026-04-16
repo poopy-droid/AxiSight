@@ -1,6 +1,6 @@
 {
   "name": "Visual Overlay",
-  "description": "A web-based screen overlay visualizer inspired by AutoHotKey.",
+  "description": "A web-based screen overlay visualizer to help lrc/lrd.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }
