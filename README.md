@@ -2,7 +2,7 @@
 
 A high-performance, transparent web-based overlay designed for gamers. Whether you need a competitive crosshair, visual indicators for navigation, or help with directional orientation, AxiSight provides a zero-lag, click-through solution.
 
-
+https://poopy-droid.github.io/AxiSight/             <------------ link
 
 🚀 QUICKSTART: How to run locally (NO HOSTING NEEDED)
 
@@ -53,7 +53,7 @@ Simply keep `AxiSight-Overlay.html` on your desktop or in your main gaming folde
  Configuration
 Your settings (colors, sizes, positions) are saved automatically to your browser's local storage. If you want to move your setup to a different PC, use the **Save JSON** button and **Load JSON** on the new instance.
 
----
+https://poopy-droid.github.io/AxiSight/
 
 🎨 Credits
 
