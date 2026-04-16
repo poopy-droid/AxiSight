@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Lock, Upload, Download, Crosshair, ImagePlus, Maximize, CircleHelp, X, MonitorPlay, Palette, Github, ChevronDown } from 'lucide-react';
+import { Lock, Upload, Download, Crosshair, ImagePlus, Maximize, CircleHelp, X, MonitorPlay, Palette, Github, ChevronDown, Type } from 'lucide-react';
 
 const APP_NAME = "AxiSight: True Overlay Edition";
 
@@ -318,19 +318,40 @@ export default function App() {
           <div className="space-y-4 text-xs">
 
             <div className="bg-[#242526] p-4 rounded border border-[#3a3b3c] flex flex-col gap-3 shadow-inner">
-              <label className="flex items-center gap-3 cursor-pointer text-[#e4e6eb] font-bold text-sm hover:text-white transition-colors">
-                <input type="checkbox" checked={showIndicators} onChange={e => setShowIndicators(e.target.checked)} className="accent-[#2d88ff] w-5 h-5"/> 
-                Toggle Left / Right Text
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer text-[#e4e6eb] font-bold text-sm hover:text-white transition-colors">
-                <input type="checkbox" checked={showCrosshair} onChange={e => setShowCrosshair(e.target.checked)} className="accent-[#2d88ff] w-5 h-5"/> 
-                Toggle Center Crosshair
-              </label>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setShowCrosshair(!showCrosshair)} 
+                  className={`flex-1 py-2 px-3 rounded flex items-center justify-center gap-2 font-bold text-xs transition-colors ${showCrosshair ? 'bg-[#2d88ff] text-white' : 'bg-[#3a3b3c] text-[#b0b3b8] hover:bg-[#4e4f50]'}`}
+                >
+                  <Crosshair size={14} /> {showCrosshair ? 'ON' : 'OFF'}
+                </button>
+                <button 
+                  onClick={() => setShowIndicators(!showIndicators)} 
+                  className={`flex-1 py-2 px-3 rounded flex items-center justify-center gap-2 font-bold text-xs transition-colors ${showIndicators ? 'bg-[#2d88ff] text-white' : 'bg-[#3a3b3c] text-[#b0b3b8] hover:bg-[#4e4f50]'}`}
+                >
+                  <Type size={14} /> {showIndicators ? 'ON' : 'OFF'}
+                </button>
+                <button 
+                  onClick={toggleFullscreen} 
+                  className={`flex-1 py-2 px-3 rounded flex items-center justify-center gap-2 font-bold text-xs transition-colors ${document.fullscreenElement ? 'bg-[#2d88ff] text-white' : 'bg-[#3a3b3c] text-[#b0b3b8] hover:bg-[#4e4f50]'}`}
+                  title="Toggle True Fullscreen Overlay Mode"
+                >
+                  <Maximize size={14} /> FS {document.fullscreenElement ? 'ON' : 'OFF'}
+                </button>
+              </div>
             </div>
 
             <div className="bg-[#242526] p-3 rounded border border-[#3a3b3c]">
-              <h3 className="font-bold text-[#e4e6eb] mb-2 text-sm">1. Screen Workspace Size (px)</h3>
-              <p className="text-[10px] text-[#b0b3b8] mb-2 leading-tight">Match this to your monitor (e.g. 1920x1080). Overlay maps strictly to these exact containers so they never warp.</p>
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-bold text-[#e4e6eb] text-sm">1. Screen Workspace Size (px)</h3>
+                <button 
+                  onClick={() => { setResW(window.innerWidth); setResH(window.innerHeight); }}
+                  className="text-[10px] bg-[#3a3b3c] hover:bg-[#4e4f50] text-[#2d88ff] px-2 py-0.5 rounded font-bold border border-[#4e4f50]"
+                >
+                  AUTO-SYNC
+                </button>
+              </div>
+              <p className="text-[10px] text-[#b0b3b8] mb-2 leading-tight">Match this to your monitor resolution (e.g. 1920x1080). If left/right feels off, hit AUTO-SYNC to snap to current window.</p>
               <div className="flex gap-4">
                 <label className="flex-1 block">
                   <span className="text-[#b0b3b8]">Width (X)</span>
@@ -564,8 +585,23 @@ export default function App() {
                 <>
                   <p><strong><span className="text-[10px] uppercase font-light mr-[1px]">micro</span>SLOP binbows:</strong></p>
                   <div className="space-y-3 pl-2">
+                    <div className="p-3 bg-[#2d88ff15] border-l-4 border-[#2d88ff] rounded-r text-[#e4e6eb] text-xs leading-relaxed">
+                      <p className="font-black uppercase mb-1">🔥 THE BEST METHOD: STEAM OVERLAY</p>
+                      <ol className="list-decimal pl-4 space-y-1">
+                        <li>Launch your Steam game.</li>
+                        <li>Press <strong>SHIFT + TAB</strong> to open the overlay.</li>
+                        <li>Open the small <strong>Web Browser</strong> button at the bottom.</li>
+                        <li>Paste your AxiSight URL into it.</li>
+                        <li><strong>MANDATORY:</strong> Click the <strong>PIN</strong> icon (top right of browser window). Without this, it won't stay active in-game.</li>
+                        <li>Set <strong>Opacity</strong> to your liking.</li>
+                      </ol>
+                      <div className="mt-2 p-2 bg-[#ffc10720] border border-[#ffc10740] rounded text-[10px] text-[#ffc107]">
+                        <strong>⚠️ WARNING:</strong> If you increase the Steam Overlay's global opacity, the browser background may become visible even if pinned. Keep the browser window pinned and adjust window-specific opacity for best results.
+                      </div>
+                    </div>
+
                     <p><strong>Solution 1: Steam Overlay Injection</strong><br/>
-                    Open Steam overlay in-game (Shift+Tab). Open the internal Web Browser. Paste this app's URL. Use the "Pin" icon at the top right of the browser window and set opacity. It stays on screen and passes clicks!</p>
+                    As detailed above. This is the #1 solution for Windows users. It's built into every Steam game.</p>
                     
                     <p><strong>Solution 2: Xbox Game Bar (Win+G)</strong><br/>
                     Press Win+G to open the Windows Game Bar. Go to the Widget Store, install a "Browser" widget. Set the URL to this app, click the "Pin" button. It natively layers over games with pass-through.</p>
