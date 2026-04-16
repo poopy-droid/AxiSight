@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useRef } from 'react';
-import { Lock, Upload, Download, Crosshair, ImagePlus, Maximize, CircleHelp, X, MonitorPlay, Palette, Github, ChevronDown, Type } from 'lucide-react';
+import { Lock, Upload, Download, Crosshair, ImagePlus, Maximize, CircleHelp, X, MonitorPlay, Palette, Github, ChevronDown, Type, ZoomIn, ZoomOut } from 'lucide-react';
 
 const APP_NAME = "AxiSight: True Overlay Edition";
 
@@ -114,6 +114,7 @@ export default function App() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [helpOS, setHelpOS] = useState<'windows' | 'linux' | 'mac'>('windows');
   const [isHelpDropdownOpen, setIsHelpDropdownOpen] = useState(false);
+  const [helpZoom, setHelpZoom] = useState(1);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -547,7 +548,26 @@ export default function App() {
             <button onClick={() => setShowHelpModal(false)} className="absolute top-4 right-4 text-[#b0b3b8] hover:text-white transition">
               <X size={24}/>
             </button>
-            <h2 className="text-xl font-bold mb-4 text-[#e4e6eb]">Using this outside the browser</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-[#e4e6eb]">Using this outside the browser</h2>
+              <div className="flex items-center gap-2 bg-[#18191a] p-1 rounded border border-[#3a3b3c]">
+                <button 
+                  onClick={() => setHelpZoom(Math.max(0.8, helpZoom - 0.1))} 
+                  className="p-1 hover:bg-[#3a3b3c] rounded text-[#b0b3b8] hover:text-white transition"
+                  title="Smaller Text"
+                >
+                  <ZoomOut size={16} />
+                </button>
+                <span className="text-[10px] font-mono font-bold text-[#2d88ff] w-8 text-center">{Math.round(helpZoom * 100)}%</span>
+                <button 
+                  onClick={() => setHelpZoom(Math.min(2.5, helpZoom + 0.1))} 
+                  className="p-1 hover:bg-[#3a3b3c] rounded text-[#b0b3b8] hover:text-white transition"
+                  title="Magnify / Larger Text"
+                >
+                  <ZoomIn size={16} />
+                </button>
+              </div>
+            </div>
             <p className="text-[#b0b3b8] text-sm mb-4 leading-relaxed">
               When you lock this program, the <em>background becomes entirely transparent</em>. To make it sit over a game while passing clicks entirely:
             </p>
@@ -578,68 +598,69 @@ export default function App() {
               )}
             </div>
 
-            <div className="bg-[#18191a] border border-[#3a3b3c] p-4 rounded text-[#b0b3b8] text-sm space-y-4 mb-6 min-h-[140px] max-h-[40vh] overflow-y-auto custom-scrollbar">
-              {helpOS === 'windows' && (
-                <>
-                  <p><strong><span className="text-[10px] uppercase font-light mr-[1px]">micro</span>SLOP binbows:</strong></p>
-                  <div className="space-y-3 pl-2">
-                    <div className="p-3 bg-[#2d88ff15] border-l-4 border-[#2d88ff] rounded-r text-[#e4e6eb] text-xs leading-relaxed">
-                      <p className="font-black uppercase mb-1">🔥 THE BEST METHOD: STEAM OVERLAY</p>
-                      <ol className="list-decimal pl-4 space-y-1">
-                        <li>Launch your Steam game.</li>
-                        <li>Press <strong>SHIFT + TAB</strong> to open the overlay.</li>
-                        <li>Open the small <strong>Web Browser</strong> button at the bottom.</li>
-                        <li>Paste your AxiSight URL into it.</li>
-                        <li><strong>MANDATORY:</strong> Click the <strong>PIN</strong> icon (top right of browser window). Without this, it won't stay active in-game.</li>
-                        <li>Set <strong>Opacity</strong> to your liking.</li>
-                        <li><strong>ZOOM (OPTIONAL):</strong> While in Shift+Tab browser, use <strong>CTRL + "+"</strong> or <strong>CTRL + "-"</strong> to zoom the entire overlay UI in or out.</li>
-                      </ol>
-                      <div className="mt-2 p-2 bg-[#ffc10720] border border-[#ffc10740] rounded text-[10px] text-[#ffc107]">
-                        <strong>⚠️ WARNING:</strong> If you increase the Steam Overlay's global opacity, the browser background may become visible even if pinned. Keep the browser window pinned and adjust window-specific opacity for best results.
+            <div className="bg-[#18191a] border border-[#3a3b3c] p-4 rounded text-[#b0b3b8] mb-6 min-h-[140px] max-h-[40vh] overflow-y-auto custom-scrollbar">
+              <div style={{ transform: `scale(${helpZoom})`, transformOrigin: 'top left', width: `${100 / helpZoom}%` }}>
+                {helpOS === 'windows' && (
+                  <>
+                    <p className="font-bold underline mb-2"><span className="text-[10px] uppercase font-light mr-[1px]">micro</span>SLOP binbows:</p>
+                    <div className="space-y-3">
+                      <div className="p-3 bg-[#2d88ff15] border-l-4 border-[#2d88ff] rounded-r text-[#e4e6eb] text-xs leading-relaxed">
+                        <p className="font-black uppercase mb-1">🔥 THE BEST METHOD: STEAM OVERLAY</p>
+                        <ol className="list-decimal pl-4 space-y-1">
+                          <li>Launch your Steam game.</li>
+                          <li>Press <strong>SHIFT + TAB</strong> to open the overlay.</li>
+                          <li>Open the small <strong>Web Browser</strong> button at the bottom.</li>
+                          <li>Paste your AxiSight URL into it.</li>
+                          <li><strong>MANDATORY:</strong> Click the <strong>PIN</strong> icon (top right of browser window).</li>
+                          <li>Set <strong>Opacity</strong> to your liking.</li>
+                        </ol>
+                        <div className="mt-2 p-2 bg-[#ffc10720] border border-[#ffc10740] rounded text-[10px] text-[#ffc107]">
+                          <strong>⚠️ WARNING:</strong> If you increase the Steam Overlay's global opacity, the browser background may become visible.
+                        </div>
                       </div>
+
+                      <p><strong>Solution 1: Steam Overlay Injection</strong><br/>
+                      As detailed above. This is the #1 solution for Windows users. It's built into every Steam game.</p>
+                      
+                      <p><strong>Solution 2: Xbox Game Bar (Win+G)</strong><br/>
+                      Press Win+G to open the Windows Game Bar. Go to the Widget Store, install a "Browser" widget. Set the URL to this app, click the "Pin" button. It natively layers over games with pass-through.</p>
+
+                      <p><strong>Solution 3: 3rd-Party Click-Through Apps</strong><br/>
+                      Download a dedicated tool like <strong>WindowTop</strong>, <strong>Ghoster</strong>, or a custom AutoHotkey script. Run this app in a normal borderless browser window, then toggle "Always on Top" and "Ignore Mouse Events".</p>
                     </div>
-
-                    <p><strong>Solution 1: Steam Overlay Injection</strong><br/>
-                    As detailed above. This is the #1 solution for Windows users. It's built into every Steam game.</p>
-                    
-                    <p><strong>Solution 2: Xbox Game Bar (Win+G)</strong><br/>
-                    Press Win+G to open the Windows Game Bar. Go to the Widget Store, install a "Browser" widget. Set the URL to this app, click the "Pin" button. It natively layers over games with pass-through.</p>
-
-                    <p><strong>Solution 3: 3rd-Party Click-Through Apps</strong><br/>
-                    Download a dedicated tool like <strong>WindowTop</strong>, <strong>Ghoster</strong>, or a custom AutoHotkey script. Run this app in a normal borderless browser window, then toggle "Always on Top" and "Ignore Mouse Events".</p>
-                  </div>
-                </>
-              )}
-              {helpOS === 'mac' && (
-                <>
-                  <p><strong>macOS:</strong></p>
-                  <div className="space-y-3 pl-2">
-                    <p><strong>Solution 1: Helium App</strong><br/>
-                    Download the app "Helium" for macOS. It's a lightweight browser built specifically for floating web content. Load this URL, adjust transparency, and toggle mouse interaction off.</p>
-                    
-                    <p><strong>Solution 2: Electron Wrapper Script</strong><br/>
-                    Create a tiny ElectronJS script. In `main.js`, load this URL and set `transparent: true`, `frame: false`. Most importantly, call `win.setIgnoreMouseEvents(true)` to natively pass clicks through to your game.</p>
-                    
-                    <p><strong>Solution 3: Plash Desktop Overlay</strong><br/>
-                    Use the "Plash" app (or similar desktop-overlay utilities on macOS) to set the URL as an overlay layer. This works best if you are running games in windowed borderless mode rather than exclusive full-screen.</p>
-                  </div>
-                </>
-              )}
-              {helpOS === 'linux' && (
-                <>
-                  <p><strong>Linux:</strong></p>
-                  <div className="space-y-3 pl-2">
-                    <p><strong>Solution 1: Wayland / Gamescope Layering</strong><br/>
-                    Run your game inside Gamescope. You can launch the browser with this overlay inside the same session or composite it tightly, taking advantage of Wayland's layer-shell extensions if supported by your compositor.</p>
-                    
-                    <p><strong>Solution 2: X11 xprop / xshape Hacks</strong><br/>
-                    Open this app in Chrome/Firefox. Find the Window ID using `xwininfo`. Use `xprop` to force "Always on Top". Use `xshape` to configure input regions to pass clicks physically to the game below.</p>
-                    
-                    <p><strong>Solution 3: Custom Widget Wrapper (Eww / Waybar)</strong><br/>
-                    Build a custom Eww, Waybar, or AGS widget configuration that embeds this web overlay. These widget systems run on the outermost compositing layer and can be trivially set to ignore pointer events natively.</p>
-                  </div>
-                </>
-              )}
+                  </>
+                )}
+                {helpOS === 'mac' && (
+                  <>
+                    <p className="font-bold underline mb-2">macOS:</p>
+                    <div className="space-y-3">
+                      <p><strong>Solution 1: Helium App</strong><br/>
+                      Download the app "Helium" for macOS. It's a lightweight browser built specifically for floating web content. Load this URL, adjust transparency, and toggle mouse interaction off.</p>
+                      
+                      <p><strong>Solution 2: Electron Wrapper Script</strong><br/>
+                      Create a tiny ElectronJS script. In `main.js`, load this URL and set `transparent: true`, `frame: false`. Most importantly, call `win.setIgnoreMouseEvents(true)` to natively pass clicks through to your game.</p>
+                      
+                      <p><strong>Solution 3: Plash Desktop Overlay</strong><br/>
+                      Use the "Plash" app (or similar desktop-overlay utilities on macOS) to set the URL as an overlay layer. This works best if you are running games in windowed borderless mode rather than exclusive full-screen.</p>
+                    </div>
+                  </>
+                )}
+                {helpOS === 'linux' && (
+                  <>
+                    <p className="font-bold underline mb-2">Linux:</p>
+                    <div className="space-y-3">
+                      <p><strong>Solution 1: Wayland / Gamescope Layering</strong><br/>
+                      Run your game inside Gamescope. You can launch the browser with this overlay inside the same session or composite it tightly, taking advantage of Wayland's layer-shell extensions if supported by your compositor.</p>
+                      
+                      <p><strong>Solution 2: X11 xprop / xshape Hacks</strong><br/>
+                      Open this app in Chrome/Firefox. Find the Window ID using `xwininfo`. Use `xprop` to force "Always on Top". Use `xshape` to configure input regions to pass clicks physically to the game below.</p>
+                      
+                      <p><strong>Solution 3: Custom Widget Wrapper (Eww / Waybar)</strong><br/>
+                      Build a custom Eww, Waybar, or AGS widget configuration that embeds this web overlay. These widget systems run on the outermost compositing layer and can be trivially set to ignore pointer events natively.</p>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             <button onClick={() => setShowHelpModal(false)} className="w-full bg-[#2d88ff] hover:bg-[#1877f2] text-white font-bold py-2.5 rounded transition">
