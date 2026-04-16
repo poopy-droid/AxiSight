@@ -114,6 +114,7 @@ export default function App() {
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [helpOS, setHelpOS] = useState<'windows' | 'linux' | 'mac'>('windows');
   const [isHelpDropdownOpen, setIsHelpDropdownOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const configInputRef = useRef<HTMLInputElement>(null);
@@ -200,6 +201,12 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
   const handleImageUpload = (e: any) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -271,7 +278,11 @@ export default function App() {
 
   const toggleFullscreen = () => {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
+      document.documentElement.requestFullscreen().then(() => {
+        // Automatically sync workspace to screen resolution on enter
+        setResW(window.screen.width);
+        setResH(window.screen.height);
+      }).catch(err => {
         console.error("Error attempting to true-fullscreen:", err);
       });
     } else {
@@ -318,32 +329,19 @@ export default function App() {
           <div className="space-y-4 text-xs">
 
             <div className="bg-[#242526] p-4 rounded border border-[#3a3b3c] flex flex-col gap-3 shadow-inner">
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => setShowCrosshair(!showCrosshair)} 
-                  className={`flex-1 py-2 px-3 rounded flex items-center justify-center gap-2 font-bold text-xs transition-colors ${showCrosshair ? 'bg-[#2d88ff] text-white' : 'bg-[#3a3b3c] text-[#b0b3b8] hover:bg-[#4e4f50]'}`}
-                >
-                  <Crosshair size={14} /> {showCrosshair ? 'ON' : 'OFF'}
-                </button>
-                <button 
-                  onClick={() => setShowIndicators(!showIndicators)} 
-                  className={`flex-1 py-2 px-3 rounded flex items-center justify-center gap-2 font-bold text-xs transition-colors ${showIndicators ? 'bg-[#2d88ff] text-white' : 'bg-[#3a3b3c] text-[#b0b3b8] hover:bg-[#4e4f50]'}`}
-                >
-                  <Type size={14} /> {showIndicators ? 'ON' : 'OFF'}
-                </button>
-                <button 
-                  onClick={toggleFullscreen} 
-                  className={`flex-1 py-2 px-3 rounded flex items-center justify-center gap-2 font-bold text-xs transition-colors ${document.fullscreenElement ? 'bg-[#2d88ff] text-white' : 'bg-[#3a3b3c] text-[#b0b3b8] hover:bg-[#4e4f50]'}`}
-                  title="Toggle True Fullscreen Overlay Mode"
-                >
-                  <Maximize size={14} /> FS {document.fullscreenElement ? 'ON' : 'OFF'}
-                </button>
-              </div>
+              <label className="flex items-center gap-3 cursor-pointer text-[#e4e6eb] font-bold text-xs hover:text-white transition-colors">
+                <input type="checkbox" checked={showIndicators} onChange={e => setShowIndicators(e.target.checked)} className="accent-[#2d88ff] w-4 h-4"/> 
+                Toggle Left / Right Text
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer text-[#e4e6eb] font-bold text-xs hover:text-white transition-colors">
+                <input type="checkbox" checked={showCrosshair} onChange={e => setShowCrosshair(e.target.checked)} className="accent-[#2d88ff] w-4 h-4"/> 
+                Toggle Center Crosshair
+              </label>
             </div>
 
             <div className="bg-[#242526] p-3 rounded border border-[#3a3b3c]">
               <div className="flex justify-between items-center mb-2">
-                <h3 className="font-bold text-[#e4e6eb] text-sm">1. Screen Workspace Size (px)</h3>
+                <h3 className="font-bold text-[#e4e6eb] text-sm italic tracking-tight uppercase">TOGGLE FULL SCREEN MODE</h3>
                 <button 
                   onClick={() => { setResW(window.innerWidth); setResH(window.innerHeight); }}
                   className="text-[10px] bg-[#3a3b3c] hover:bg-[#4e4f50] text-[#2d88ff] px-2 py-0.5 rounded font-bold border border-[#4e4f50]"
@@ -365,9 +363,9 @@ export default function App() {
               </div>
               <button 
                 onClick={toggleFullscreen}
-                className="w-full mt-3 py-1.5 bg-[#3a3b3c] hover:bg-[#4e4f50] border border-[#4e4f50] rounded text-white flex items-center justify-center gap-2 transition font-medium"
+                className={`w-full mt-3 py-2 rounded flex items-center justify-center gap-2 transition font-bold text-sm ${isFullscreen ? 'bg-[#2d88ff] text-white' : 'bg-[#3a3b3c] hover:bg-[#4e4f50] border border-[#4e4f50] text-white'}`}
               >
-                <Maximize size={14} /> Fullscreen alignment mode
+                <Maximize size={14} /> TOGGLE FULL SCREEN MODE
               </button>
             </div>
 
@@ -423,7 +421,7 @@ export default function App() {
               </label>
               <label className="block">
                 <span className="flex justify-between text-[#b0b3b8]">Horizontal Spread <span>{spread}px</span></span>
-                <input type="range" min="0" max="1000" value={spread} onChange={e => setSpread(Number(e.target.value))} className="w-full mt-1 accent-[#2d88ff]"/>
+                <input type="range" min="0" max="2500" value={spread} onChange={e => setSpread(Number(e.target.value))} className="w-full mt-1 accent-[#2d88ff]"/>
               </label>
               <label className="block">
                 <span className="flex justify-between text-[#b0b3b8]">Font Size <span>{fontSize}px</span></span>
@@ -594,6 +592,7 @@ export default function App() {
                         <li>Paste your AxiSight URL into it.</li>
                         <li><strong>MANDATORY:</strong> Click the <strong>PIN</strong> icon (top right of browser window). Without this, it won't stay active in-game.</li>
                         <li>Set <strong>Opacity</strong> to your liking.</li>
+                        <li><strong>ZOOM (OPTIONAL):</strong> While in Shift+Tab browser, use <strong>CTRL + "+"</strong> or <strong>CTRL + "-"</strong> to zoom the entire overlay UI in or out.</li>
                       </ol>
                       <div className="mt-2 p-2 bg-[#ffc10720] border border-[#ffc10740] rounded text-[10px] text-[#ffc107]">
                         <strong>⚠️ WARNING:</strong> If you increase the Steam Overlay's global opacity, the browser background may become visible even if pinned. Keep the browser window pinned and adjust window-specific opacity for best results.
@@ -684,35 +683,37 @@ export default function App() {
 
         {showIndicators && (
           <div 
-            className="absolute font-black tracking-widest"
+            className="absolute left-0 flex items-center justify-start whitespace-nowrap"
             style={{ 
               top: `${yPos}%`, 
-              left: '50%',
-              transform: `translate(calc(-50% - ${spread}px), -50%)`, 
+              width: '50%',
+              paddingLeft: `calc(50% - ${spread}px)`,
+              transform: 'translateY(-50%)', 
               fontSize: `${fontSize}px`, 
               color: textColor,
               textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 4px 4px 10px rgba(0,0,0,0.8)',
               opacity: textOpacity / 100 
             }}
           >
-            LEFT
+            <span className="font-black tracking-widest">LEFT</span>
           </div>
         )}
 
         {showIndicators && (
           <div 
-            className="absolute font-black tracking-widest"
+            className="absolute right-0 flex items-center justify-end whitespace-nowrap"
             style={{ 
               top: `${yPos}%`, 
-              left: '50%',
-              transform: `translate(calc(-50% + ${spread}px), -50%)`, 
+              width: '50%',
+              paddingRight: `calc(50% - ${spread}px)`,
+              transform: 'translateY(-50%)', 
               fontSize: `${fontSize}px`, 
               color: textColor,
               textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 4px 4px 10px rgba(0,0,0,0.8)',
               opacity: textOpacity / 100 
             }}
           >
-            RIGHT
+            <span className="font-black tracking-widest">RIGHT</span>
           </div>
         )}
       </div>
